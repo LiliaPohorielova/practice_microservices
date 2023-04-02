@@ -1,4 +1,4 @@
-package com.nixsolutions.fraud.dto;
+package com.nixsolutions.clients.fraud;
 
 public record FraudCheckResponse(Boolean isFraudster) {
 }

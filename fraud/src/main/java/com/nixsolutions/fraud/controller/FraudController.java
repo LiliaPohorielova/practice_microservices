@@ -1,6 +1,6 @@
 package com.nixsolutions.fraud.controller;
 
-import com.nixsolutions.fraud.dto.FraudCheckResponse;
+import com.nixsolutions.clients.fraud.FraudCheckResponse;
 import com.nixsolutions.fraud.service.FraudCheckService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

@@ -1,19 +1,19 @@
 package com.nixsolutions.customer.service;
 
+import com.nixsolutions.clients.fraud.FraudCheckResponse;
+import com.nixsolutions.clients.fraud.FraudClient;
 import com.nixsolutions.customer.dto.CustomerRequest;
-import com.nixsolutions.customer.dto.FraudCheckResponse;
 import com.nixsolutions.customer.entity.Customer;
 import com.nixsolutions.customer.repository.CustomerRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 
 @Service
 @AllArgsConstructor
 public class CustomerService {
 
     private final CustomerRepository customerRepository;
-    private final RestTemplate restTemplate;
+    private final FraudClient fraudClient;
 
     public void registerCustomer(CustomerRequest request) {
         Customer customer = Customer.builder()
@@ -27,17 +27,17 @@ public class CustomerService {
 
         customerRepository.saveAndFlush(customer);
 
-        //TODO: check if fraudster
-        FraudCheckResponse response = restTemplate.getForObject(
-            "http://FRAUD/api/v1/fraud-check/{customerId}",
-            FraudCheckResponse.class,
-            customer.getId()
-        );
+        //TODO: check if fraudster (this old code was replaced!)
+//        FraudCheckResponse response = restTemplate.getForObject(
+//            "http://FRAUD/api/v1/fraud-check/{customerId}",
+//            FraudCheckResponse.class,
+//            customer.getId()
+//        );
+        FraudCheckResponse response = fraudClient.isFraudster(customer.getId());
 
         if(response.isFraudster()) {
             throw new IllegalStateException("fraudster");
         }
-
 
 
         //TODO: send notification

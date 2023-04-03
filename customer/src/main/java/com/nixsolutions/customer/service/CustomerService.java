@@ -2,6 +2,8 @@ package com.nixsolutions.customer.service;
 
 import com.nixsolutions.clients.fraud.FraudCheckResponse;
 import com.nixsolutions.clients.fraud.FraudClient;
+import com.nixsolutions.clients.notification.NotificationClient;
+import com.nixsolutions.clients.notification.NotificationRequest;
 import com.nixsolutions.customer.dto.CustomerRequest;
 import com.nixsolutions.customer.entity.Customer;
 import com.nixsolutions.customer.repository.CustomerRepository;
@@ -14,6 +16,7 @@ public class CustomerService {
 
     private final CustomerRepository customerRepository;
     private final FraudClient fraudClient;
+    private final NotificationClient notificationClient;
 
     public void registerCustomer(CustomerRequest request) {
         Customer customer = Customer.builder()
@@ -27,12 +30,7 @@ public class CustomerService {
 
         customerRepository.saveAndFlush(customer);
 
-        //TODO: check if fraudster (this old code was replaced!)
-//        FraudCheckResponse response = restTemplate.getForObject(
-//            "http://FRAUD/api/v1/fraud-check/{customerId}",
-//            FraudCheckResponse.class,
-//            customer.getId()
-//        );
+        //TODO: check if fraudster (call to another Microservice)
         FraudCheckResponse response = fraudClient.isFraudster(customer.getId());
 
         if(response.isFraudster()) {
@@ -40,7 +38,14 @@ public class CustomerService {
         }
 
 
-        //TODO: send notification
-
+        //TODO: send notification (can be replaced by Message Queue)
+        String message = String.format("Hi %s, welcome to NIX SOLUTIONS company!",  customer.getFirstName());
+        notificationClient.sendNotification(
+            NotificationRequest.builder()
+                .toCustomerId(customer.getId())
+                .toCustomerEmail(customer.getEmail())
+                .message(message)
+                .build()
+        );
     }
 }

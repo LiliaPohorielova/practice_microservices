@@ -39,7 +39,7 @@ public class CustomerService {
 
 
         //TODO: send notification (can be replaced by Message Queue)
-        String message = String.format("Hi %s, welcome to NIX SOLUTIONS company!",  customer.getFirstName());
+        String message = String.format("Hi %s, welcome to our company!",  customer.getFirstName());
         notificationClient.sendNotification(
             NotificationRequest.builder()
                 .toCustomerId(customer.getId())
